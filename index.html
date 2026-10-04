@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinesischer Nachnamensgenerator · 姓氏生成器</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+    body {
+        background:
+            radial-gradient(ellipse at 15% 20%, #1a1040 0%, #03030c 55%),
+            radial-gradient(ellipse at 85% 75%, #3d1f00 0%, #03030c 60%),
+            radial-gradient(circle at 50% 50%, #0a0f2a, #010103);
+        background-blend-mode: screen, screen, normal;
+        color: #eef5ff;
+        min-height: 100vh;
+        padding: 1.5rem 1.2rem 4rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        overflow-x: hidden;
+    }
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            repeating-linear-gradient(0deg, transparent 0 2px, #ffb34710 2px 3px),
+            repeating-linear-gradient(90deg, transparent 0 2px, #ffb34710 2px 3px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.5;
+    }
+    body::after {
+        content: '';
+        position: fixed;
+        inset: -20%;
+        background: conic-gradient(from 0deg, transparent, #ffb34722, transparent 30%, #7a4dff22, transparent 60%);
+        animation: rotateGlow 30s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.35;
+    }
+    @keyframes rotateGlow {
+        to { transform: rotate(360deg); }
+    }
+    .app-container {
+        max-width: 1400px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+    .hero {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff6c0, #ffb347, #ff6a00, #ffe9a8, #ffb347);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: 3px;
+        animation: shimmer 6s ease-in-out infinite;
+        text-shadow: 0 0 60px #ff8800aa;
+    }
+    @keyframes shimmer {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    .hero p {
+        color: #c9a86b;
+        font-size: 1rem;
+        margin-top: 0.4rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow: 0 0 12px #ffb34780;
+    }
+    .generator-panel {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 1.4rem;
+        margin-bottom: 1.6rem;
+    }
+    @media (max-width: 750px) {
+        .generator-panel { grid-template-columns: 1fr; }
+    }
+    .gen-box {
+        background: linear-gradient(145deg, #0b1224ee, #060a14ee);
+        backdrop-filter: blur(18px);
+        border: 1.5px solid #ffb34740;
+        border-radius: 2rem;
+        padding: 1.5rem 1.7rem;
+        box-shadow:
+            0 0 40px #ffb34715,
+            0 25px 40px -12px #000000cc,
+            0 0 0 1px #ffb34720 inset;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .gen-box:hover {
+        border-color: #ffb34799;
+        box-shadow: 0 0 60px #ffb34730, 0 25px 40px -12px #000, 0 0 0 1px #ffb34740 inset;
+    }
+    .gen-box h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #ffd966;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-shadow: 0 0 15px #ffb34780;
+    }
+    .gen-box h2 span { font-size: 1.5rem; }
+    .single-row, .bulk-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+    .input-neon {
+        background: #050a14;
+        border: 1.5px solid #3a5475;
+        color: #ffe9b0;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 0.65rem 1rem;
+        border-radius: 2.5rem;
+        outline: none;
+        width: 180px;
+        text-align: right;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .input-neon::placeholder {
+        color: #3a5475;
+        font-weight: 400;
+    }
+    .input-neon:focus {
+        border-color: #ffb347;
+        box-shadow: 0 0 20px #ffb34760;
+    }
+    .btn {
+        background: linear-gradient(145deg, #2d1a00, #1a0f00);
+        border: 1.5px solid #ffb34770;
+        padding: 0.7rem 1.5rem;
+        border-radius: 3rem;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #ffdd99;
+        cursor: pointer;
+        box-shadow: 0 0 25px #ffb34720, 0 10px 20px -6px #000;
+        transition: all 0.2s;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+    .btn:hover {
+        background: linear-gradient(145deg, #4a2c00, #2d1a00);
+        box-shadow: 0 0 40px #ffb34760, 0 12px 24px -6px #000;
+        color: #fff6d5;
+        border-color: #ffcc66;
+        transform: translateY(-2px) scale(1.02);
+    }
+    .btn:active { transform: scale(0.97); }
+    .hint {
+        font-size: 0.7rem;
+        color: #8499b4;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+        padding-left: 0.4rem;
+    }
+
+    /* ZULETZT GENERIERT */
+    .last-section {
+        background: linear-gradient(135deg, #0a0f1fee, #140c22ee);
+        backdrop-filter: blur(22px);
+        border-radius: 2.5rem;
+        padding: 2rem 2rem 2rem;
+        margin: 0 0 1.6rem;
+        border: 2px solid #ffb34760;
+        box-shadow:
+            0 0 80px #ff880030,
+            0 0 0 1px #ffb34740 inset,
+            0 30px 50px -15px #000;
+        position: relative;
+        overflow: hidden;
+    }
+    .last-section::before {
+        content: '';
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(from 0deg, transparent, #ffb34725, transparent 30%, #7a4dff20, transparent 60%);
+        animation: rotateGlow 22s linear infinite;
+        pointer-events: none;
+    }
+    .last-section > * { position: relative; z-index: 2; }
+
+    .last-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.4rem;
+    }
+    .last-header .last-title {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 8px;
+        color: #ffb347cc;
+        text-shadow: 0 0 20px #ffb34780;
+    }
+
+    .last-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        margin-bottom: 1.8rem;
+        text-align: center;
+    }
+    .last-hero .hero-name {
+        font-size: 6rem;
+        font-weight: 900;
+        line-height: 1.05;
+        background: linear-gradient(135deg, #fff9e6, #ffcd7e, #ff9d2e, #ffffff, #ffb347);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 50px #ff8800cc, 0 0 20px #ffaa00;
+        letter-spacing: 6px;
+        animation: shimmer 5s ease-in-out infinite;
+        word-break: break-word;
+    }
+    .last-hero .hero-pinyin {
+        font-size: 2rem;
+        color: #c9d9ff;
+        letter-spacing: 5px;
+        font-weight: 300;
+        text-shadow: 0 0 20px #7a9dff;
+        font-style: italic;
+    }
+
+    .last-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.9rem;
+    }
+    @media (max-width: 1050px) { .last-stats { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 620px) { .last-stats { grid-template-columns: repeat(2, 1fr); } }
+    .last-stat {
+        background: #0c1526cc;
+        border: 1px solid #3a5475;
+        border-radius: 1.1rem;
+        padding: 0.9rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        transition: border-color 0.3s, transform 0.2s;
+    }
+    .last-stat:hover { border-color: #ffb34780; transform: translateY(-2px); }
+    .last-stat .ls-label {
+        font-size: 0.62rem;
+        color: #8ea3c2;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+    }
+    .last-stat .ls-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffdd99;
+        font-family: 'JetBrains Mono', monospace;
+        text-shadow: 0 0 12px #ffb34760;
+        line-height: 1.15;
+        word-break: break-word;
+    }
+    .last-stat .ls-value.highlight { color: #ffd966; text-shadow: 0 0 14px #ffd96680; }
+    .last-stat .ls-value.rank { color: #ffe9b0; }
+
+    /* INFO-KACHELN */
+    .info-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.6rem;
+    }
+    @media (max-width: 1050px) {
+        .info-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+        .info-row { grid-template-columns: 1fr; }
+    }
+    .info-card {
+        background: linear-gradient(145deg, #0a1424ee, #060c16ee);
+        backdrop-filter: blur(12px);
+        border: 1.5px solid #2c4a6e;
+        border-radius: 1.8rem;
+        padding: 1.1rem 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 0 30px #000000aa, 0 0 0 1px #ffb34710 inset;
+        transition: border-color 0.3s, transform 0.2s;
+    }
+    .info-card:hover {
+        border-color: #ffb34780;
+        transform: translateY(-3px);
+    }
+    .info-icon {
+        font-size: 1.9rem;
+        filter: drop-shadow(0 0 10px #ffb347);
+        flex-shrink: 0;
+    }
+    .info-content h4 {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        color: #8ea3c2;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.2rem;
+    }
+    .info-content .info-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffdd99;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.1;
+        text-shadow: 0 0 15px #ffb34780;
+    }
+    .info-content .info-sub {
+        font-size: 0.72rem;
+        color: #95b0d4;
+        margin-top: 0.15rem;
+    }
+    .info-content .info-sub .promille {
+        color: #ffd966;
+        font-weight: 700;
+        text-shadow: 0 0 8px #ffd96680;
+    }
+
+    /* TOP-N KONTROLLE */
+    .topn-card {
+        grid-column: span 4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        background: linear-gradient(145deg, #0a1424ee, #060c16ee);
+        border: 1.5px solid #2c4a6e;
+        border-radius: 1.8rem;
+        padding: 1.1rem 1.4rem;
+    }
+    @media (max-width: 1050px) { .topn-card { grid-column: span 2; } }
+    @media (max-width: 560px) { .topn-card { grid-column: span 1; } }
+    .topn-label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    .topn-label h4 {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        color: #8ea3c2;
+        letter-spacing: 1.5px;
+    }
+    .topn-label .topn-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffdd99;
+        font-family: 'JetBrains Mono', monospace;
+        text-shadow: 0 0 15px #ffb34780;
+    }
+    .topn-label .topn-sub {
+        font-size: 0.72rem;
+        color: #95b0d4;
+    }
+    .topn-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        flex: 1;
+        max-width: 500px;
+    }
+    .topn-controls input[type="range"] {
+        flex: 1;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #ffb347, #ff6a00);
+        outline: none;
+    }
+    .topn-controls input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffdd99;
+        border: 2px solid #ffb347;
+        cursor: pointer;
+        box-shadow: 0 0 15px #ffb347;
+    }
+    .topn-controls input[type="number"] {
+        width: 75px;
+        background: #050a14;
+        border: 1.5px solid #3a5475;
+        color: #ffe9b0;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 0.4rem 0.7rem;
+        border-radius: 1rem;
+        outline: none;
+        text-align: right;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .topn-controls input[type="number"]:focus {
+        border-color: #ffb347;
+        box-shadow: 0 0 20px #ffb34760;
+    }
+
+    /* TABELLE */
+    .table-section {
+        background: linear-gradient(145deg, #070c18ee, #03060fee);
+        backdrop-filter: blur(14px);
+        border-radius: 2.5rem;
+        padding: 1.5rem 1.2rem;
+        border: 1.5px solid #2c405c;
+        box-shadow: 0 0 60px #000000cc, 0 0 0 1px #ffb34720 inset;
+    }
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.2rem;
+        padding: 0 0.5rem;
+        gap: 0.7rem;
+    }
+    .table-header h3 {
+        font-size: 1.25rem;
+        color: #ffd966;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-shadow: 0 0 20px #ffb34780;
+    }
+    .table-header-badges {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .count-badge {
+        background: #131f30;
+        padding: 0.35rem 1.2rem;
+        border-radius: 3rem;
+        font-size: 0.85rem;
+        color: #b0c8e5;
+        border: 1px solid #3d5b80;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .count-badge .badge-label {
+        color: #8ea3c2;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+    }
+    .count-badge .badge-value {
+        color: #ffd966;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        text-shadow: 0 0 10px #ffd96680;
+    }
+    .table-wrapper {
+        max-height: 560px;
+        overflow-y: auto;
+        border-radius: 1.5rem;
+        scrollbar-width: thin;
+        scrollbar-color: #ffb347 #0a1220;
+    }
+    .table-wrapper::-webkit-scrollbar { width: 8px; }
+    .table-wrapper::-webkit-scrollbar-track { background: #0a1220; border-radius: 10px; }
+    .table-wrapper::-webkit-scrollbar-thumb { background: #ffb347; border-radius: 10px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    th {
+        text-align: left;
+        padding: 0.85rem 0.7rem 0.7rem 1rem;
+        color: #ffb347;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 1.2px;
+        border-bottom: 2px solid #2d405c;
+        background: #0a1220ee;
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(8px);
+        z-index: 10;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s, background 0.2s;
+        white-space: nowrap;
+    }
+    th:hover {
+        color: #fff3d1;
+        background: #132338ee;
+    }
+    th .sort-arrow {
+        display: inline-block;
+        margin-left: 0.35rem;
+        font-size: 0.75rem;
+        opacity: 0.4;
+        transition: opacity 0.2s, color 0.2s;
+    }
+    th.sort-active .sort-arrow {
+        opacity: 1;
+        color: #ffdd99;
+        text-shadow: 0 0 10px #ffb347;
+    }
+    th.sort-active {
+        color: #ffe9b0;
+        background: #16273eee;
+    }
+    th.no-sort {
+        cursor: default;
+    }
+    th.no-sort:hover {
+        color: #ffb347;
+        background: #0a1220ee;
+    }
+    td {
+        padding: 0.55rem 0.7rem 0.55rem 1rem;
+        border-bottom: 1px solid #182233;
+        transition: background 0.15s;
+    }
+    /* Hover-Aufhellung im #-Farbschema (Gold) */
+    tr:hover td {
+        background: #2a1a00cc;
+        color: #fff3d1;
+    }
+    tr:hover .rank { color: #ffd966; }
+    tr:hover .name-cell { color: #fff6d5; }
+    tr:hover .pinyin-cell { color: #ffe9b0; }
+    tr:hover .num-cell { color: #ffdd99; }
+    tr:hover .generated-cell { color: #ffcc66; }
+    tr:hover .per100gen-cell { color: #ffe9b0; }
+    .row-num {
+        color: #5f7391;
+        font-weight: 600;
+        width: 40px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+    }
+    .rank {
+        color: #ffb347;
+        font-weight: 700;
+        width: 50px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .name-cell {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #f0e6d2;
+    }
+    .pinyin-cell {
+        color: #95b0d4;
+        font-style: italic;
+    }
+    .num-cell {
+        font-family: 'JetBrains Mono', monospace;
+        color: #a0e0b0;
+        text-align: right;
+        padding-right: 1rem;
+    }
+    .generated-cell {
+        font-family: 'JetBrains Mono', monospace;
+        color: #ffb879;
+        font-weight: 700;
+        text-align: right;
+        padding-right: 1.5rem;
+    }
+    .per100gen-cell {
+        font-family: 'JetBrains Mono', monospace;
+        color: #b8d0ff;
+        text-align: right;
+        padding-right: 1rem;
+        font-size: 0.85rem;
+        min-width: 200px;
+    }
+    .per100gen-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+    .per100gen-bar-track {
+        flex: 1;
+        max-width: 100px;
+        height: 8px;
+        border-radius: 4px;
+        background: #0f1e30;
+        overflow: hidden;
+        box-shadow: inset 0 0 5px #00000080;
+    }
+    .per100gen-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #b8d0ff, #7a9dff);
+        box-shadow: 0 0 10px #b8d0ff80;
+        transition: width 0.3s;
+    }
+    .per100gen-value {
+        min-width: 95px;
+        text-align: right;
+    }
+</style>
+</head>
+<body>
+<div class="app-container">
+    <div class="hero">
+        <h1>百家姓 · 概率生成器</h1>
+        <p>basierend auf echten Häufigkeitsdaten</p>
+    </div>
+
+    <div class="generator-panel">
+        <div class="gen-box">
+            <h2><span>🎲</span> Einzelgenerator</h2>
+            <div class="single-row">
+                <button class="btn" id="generateSingleBtn">✨ Namen ziehen</button>
+            </div>
+            <div class="hint">Verwendet die original Wahrscheinlichkeiten · eine Ziehung</div>
+        </div>
+        <div class="gen-box">
+            <h2><span>⚡</span> Schnellgenerator</h2>
+            <div class="bulk-row">
+                <input type="number" id="bulkCount" class="input-neon" placeholder="z. B. 1000000" min="1" step="1">
+                <button class="btn" id="generateBulkBtn">🚀 Generieren</button>
+            </div>
+            <div class="hint">Keine Obergrenze · kumulative Verteilung + Binärsuche · exakte Wahrscheinlichkeiten</div>
+        </div>
+    </div>
+
+    <!-- ZULETZT GENERIERT -->
+    <div class="last-section">
+        <div class="last-header">
+            <div class="last-title">zuletzt generiert</div>
+        </div>
+
+        <div class="last-hero">
+            <div class="hero-name" id="lastNameDisplay">王</div>
+            <div class="hero-pinyin" id="lastPinyinDisplay">Wáng</div>
+        </div>
+
+        <div class="last-stats">
+            <div class="last-stat">
+                <span class="ls-label">Rang</span>
+                <span class="ls-value rank" id="lastRankDisplay">1</span>
+            </div>
+            <div class="last-stat">
+                <span class="ls-label">Häufigkeit</span>
+                <span class="ls-value" id="lastFrequencyDisplay">95.200.000</span>
+            </div>
+            <div class="last-stat">
+                <span class="ls-label">Pro 100 Mio.</span>
+                <span class="ls-value" id="lastProbDisplay">2.800.000</span>
+            </div>
+            <div class="last-stat">
+                <span class="ls-label">Generiert</span>
+                <span class="ls-value highlight" id="lastGeneratedCount">0</span>
+            </div>
+            <div class="last-stat">
+                <span class="ls-label">Pro 100 Mio. generiert</span>
+                <span class="ls-value highlight" id="lastPer100GenDisplay">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFO-KACHELN -->
+    <div class="info-row">
+        <div class="info-card">
+            <div class="info-icon">🎯</div>
+            <div class="info-content">
+                <h4>Ziehungen gesamt</h4>
+                <div class="info-value" id="totalGeneratedInfo">0</div>
+                <div class="info-sub">Alle Generierungen zusammengezählt</div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">🌐</div>
+            <div class="info-content">
+                <h4>Effektive Vielfalt</h4>
+                <div class="info-value" id="effectiveDiversity">0</div>
+                <div class="info-sub"><span class="promille" id="effectiveDiversityPromille">0,0000 ‰</span> aller Namen</div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">🔤</div>
+            <div class="info-content">
+                <h4>Zweisilbige gezogen</h4>
+                <div class="info-value" id="twoCharDrawn">0</div>
+                <div class="info-sub"><span class="promille" id="twoCharDrawnPromille">0,0000 ‰</span> aller 2-Zeichen-Namen</div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">🧑‍🤝‍🧑</div>
+            <div class="info-content">
+                <h4>Personen mit 2 Zeichen</h4>
+                <div class="info-value" id="twoCharPersons">0</div>
+                <div class="info-sub"><span class="promille" id="twoCharPersonsPromille">0,0000 ‰</span> aller Ziehungen</div>
+            </div>
+        </div>
+        <div class="topn-card">
+            <div class="topn-label">
+                <h4>Top-N-Anteil (einstellbar)</h4>
+                <div class="topn-value" id="topNValue">10</div>
+                <div class="topn-sub" id="topNShareSub">Anteil der Top 10 an Gesamtbevölkerung</div>
+            </div>
+            <div class="topn-controls">
+                <input type="range" id="topNSlider" min="1" max="568" value="10" step="1">
+                <input type="number" id="topNInput" min="1" max="568" value="10" step="1">
+                <div class="topn-value" id="topNShare" style="min-width:90px; text-align:right;">45,50 %</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <h3>📋 Alle Nachnamen nach Häufigkeit</h3>
+            <div class="table-header-badges">
+                <div class="count-badge">
+                    <span class="badge-label">Personen insgesamt</span>
+                    <span class="badge-value" id="totalPersonsInfo">0</span>
+                </div>
+                <div class="count-badge" id="totalNamesCount">568 Einträge</div>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table id="surnameTable">
+                <thead>
+                    <tr>
+                        <th class="no-sort">#</th>
+                        <th data-sort="nr">Rang <span class="sort-arrow">▼</span></th>
+                        <th data-sort="zeichen">Zeichen <span class="sort-arrow">▼</span></th>
+                        <th data-sort="pinyin">Pinyin <span class="sort-arrow">▼</span></th>
+                        <th data-sort="anzahl" style="text-align:right">Häufigkeit <span class="sort-arrow">▼</span></th>
+                        <th data-sort="per100Mio" style="text-align:right">pro 100 Mio. <span class="sort-arrow">▼</span></th>
+                        <th data-sort="generated" style="text-align:right">Generiert <span class="sort-arrow">▼</span></th>
+                        <th data-sort="per100gen" style="text-align:right">pro 100 Mio. generiert <span class="sort-arrow">▼</span></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rawData = [
+        [1, "王", "Wáng", 95200000],
+        [2, "李", "Lǐ", 93400000],
+        [3, "张 / 張", "Zhāng", 89600000],
+        [4, "刘 / 劉", "Liú", 67700000],
+        [5, "陈 / 陳", "Chén", 61300000],
+        [6, "杨 / 楊", "Yáng", 42700000],
+        [7, "黄 / 黃", "Huáng", 32600000],
+        [8, "吴 / 吳", "Wú", 26800000],
+        [9, "赵 / 趙", "Zhào", 26700000],
+        [10, "周", "Zhōu", 25200000],
+        [11, "徐", "Xú", 19300000],
+        [12, "孙 / 孫", "Sūn", 18300000],
+        [13, "马 / 馬", "Mǎ", 17200000],
+        [14, "朱", "Zhū", 17000000],
+        [15, "胡", "Hú", 15500000],
+        [16, "林", "Lín", 15100000],
+        [17, "郭", "Guō", 15000000],
+        [18, "何", "Hé", 14000000],
+        [19, "高", "Gāo", 13300000],
+        [20, "罗 / 羅", "Luó", 12600000],
+        [21, "郑 / 鄭", "Zhèng", 12400000],
+        [22, "梁", "Liáng", 11300000],
+        [23, "谢 / 謝", "Xiè", 10100000],
+        [24, "宋", "Sòng", 9320000],
+        [25, "唐", "Táng", 9170000],
+        [26, "许 / 許", "Xǔ", 8810000],
+        [27, "邓 / 鄧", "Dèng", 8210000],
+        [28, "冯 / 馮", "Féng", 8180000],
+        [29, "韩 / 韓", "Hán", 8150000],
+        [30, "曹", "Cáo", 7910000],
+        [31, "曾", "Zēng", 7720000],
+        [32, "彭", "Péng", 7660000],
+        [33, "萧 / 蕭", "Xiāo", 7390000],
+        [34, "蔡", "Cài", 7010000],
+        [35, "潘", "Pān", 6870000],
+        [36, "田", "Tián", 6850000],
+        [37, "董", "Dǒng", 6770000],
+        [38, "袁", "Yuán", 6670000],
+        [39, "于", "Yú", 6420000],
+        [40, "余", "Yú", 6330000],
+        [41, "叶 / 葉", "Yè", 6320000],
+        [42, "蒋 / 蔣", "Jiǎng", 6320000],
+        [43, "杜", "Dù", 6190000],
+        [44, "苏 / 蘇", "Sū", 6060000],
+        [45, "魏", "Wèi", 6030000],
+        [46, "程", "Chéng", 6010000],
+        [47, "吕 / 呂", "Lǚ", 5960000],
+        [48, "丁", "Dīng", 5760000],
+        [49, "沈", "Shěn", 5500000],
+        [50, "任", "Rén", 5470000],
+        [51, "姚", "Yáo", 5380000],
+        [52, "卢 / 盧", "Lú", 5360000],
+        [53, "傅", "Fù", 5360000],
+        [54, "钟 / 鍾", "Zhōng", 5330000],
+        [55, "姜", "Jiāng", 5230000],
+        [56, "崔", "Cuī", 5090000],
+        [57, "谭 / 譚", "Tán", 4990000],
+        [58, "廖", "Liào", 4870000],
+        [59, "范", "Fàn", 4850000],
+        [60, "汪", "Wāng", 4830000],
+        [61, "陆 / 陸", "Lù", 4800000],
+        [62, "金", "Jīn", 4670000],
+        [63, "石", "Shí", 4550000],
+        [64, "戴", "Dài", 4490000],
+        [65, "贾 / 賈", "Jiǎ", 4390000],
+        [66, "韦 / 韋", "Wéi", 4300000],
+        [67, "夏", "Xià", 4260000],
+        [68, "邱", "Qiū", 4230000],
+        [69, "方", "Fāng", 4130000],
+        [70, "侯", "Hóu", 4010000],
+        [71, "邹 / 鄒", "Zōu", 3940000],
+        [72, "熊", "Xióng", 3840000],
+        [73, "孟", "Mèng", 3830000],
+        [74, "秦", "Qín", 3790000],
+        [75, "白", "Bái", 3740000],
+        [76, "江", "Jiāng", 3690000],
+        [77, "阎 / 閻", "Yán", 3600000],
+        [78, "薛", "Xuē", 3470000],
+        [79, "尹", "Yǐn", 3460000],
+        [80, "段", "Duàn", 3200000],
+        [81, "雷", "Léi", 3190000],
+        [82, "黎", "Lí", 2880000],
+        [83, "史", "Shǐ", 2850000],
+        [84, "龙 / 龍", "Lóng", 2810000],
+        [85, "陶", "Táo", 2740000],
+        [86, "贺 / 賀", "Hè", 2740000],
+        [87, "顾 / 顧", "Gù", 2720000],
+        [88, "毛", "Máo", 2640000],
+        [89, "郝", "Hǎo", 2640000],
+        [90, "龚 / 龔", "Gōng", 2640000],
+        [91, "邵", "Shào", 2620000],
+        [92, "万 / 萬", "Wàn", 2540000],
+        [93, "钱 / 錢", "Qián", 2490000],
+        [94, "严 / 嚴", "Yán", 2460000],
+        [95, "赖 / 賴", "Lài", 2400000],
+        [96, "覃", "Qín", 2400000],
+        [97, "洪", "Hóng", 2400000],
+        [98, "武", "Wǔ", 2390000],
+        [99, "莫", "Mò", 2330000],
+        [100, "孔", "Kǒng", 2310000],
+        [101, "汤 / 湯", "Tāng", 2270000],
+        [102, "向", "Xiàng", 2260000],
+        [103, "常", "Cháng", 2180000],
+        [104, "温 / 溫", "Wēn", 2170000],
+        [105, "康", "Kāng", 2110000],
+        [106, "施", "Shī", 2060000],
+        [107, "文", "Wén", 2040000],
+        [108, "牛", "Niú", 2020000],
+        [109, "樊", "Fán", 2000000],
+        [110, "葛", "Gě", 1950000],
+        [111, "邢", "Xíng", 1920000],
+        [112, "安", "Ān", 1790000],
+        [113, "齐 / 齊", "Qí", 1760000],
+        [114, "易", "Yì", 1750000],
+        [115, "乔 / 喬", "Qiáo", 1730000],
+        [116, "伍", "Wǔ", 1710000],
+        [117, "庞 / 龐", "Páng", 1670000],
+        [118, "颜 / 顏", "Yán", 1640000],
+        [119, "倪", "Ní", 1630000],
+        [120, "庄 / 莊", "Zhuāng", 1620000],
+        [121, "聂 / 聶", "Niè", 1590000],
+        [122, "章", "Zhāng", 1570000],
+        [123, "鲁 / 魯", "Lǔ", 1510000],
+        [124, "岳", "Yuè", 1490000],
+        [125, "翟", "Zhái", 1490000],
+        [126, "殷", "Yīn", 1470000],
+        [127, "詹", "Zhān", 1470000],
+        [128, "申", "Shēn", 1470000],
+        [129, "欧 / 歐", "Ōu", 1460000],
+        [130, "耿", "Gěng", 1400000],
+        [131, "关 / 關", "Guān", 1370000],
+        [132, "兰 / 蘭", "Lán", 1340000],
+        [133, "焦", "Jiāo", 1330000],
+        [134, "俞", "Yú", 1320000],
+        [135, "左", "Zuǒ", 1310000],
+        [136, "柳", "Liǔ", 1290000],
+        [137, "甘", "Gān", 1260000],
+        [138, "祝", "Zhù", 1200000],
+        [139, "包", "Bāo", 1150000],
+        [140, "宁 / 寧", "Nìng", 1100000],
+        [141, "尚", "Shàng", 1090000],
+        [142, "符", "Fú", 1090000],
+        [143, "舒", "Shū", 1090000],
+        [144, "阮", "Ruǎn", 1090000],
+        [145, "柯", "Kē", 1060000],
+        [146, "纪 / 紀", "Jǐ", 1060000],
+        [147, "梅", "Méi", 1050000],
+        [148, "童", "Tóng", 1050000],
+        [149, "凌", "Líng", 1030000],
+        [150, "毕 / 畢", "Bì", 1030000],
+        [151, "单 / 單", "Shàn", 1010000],
+        [152, "季", "Jì", 1010000],
+        [153, "裴", "Péi", 1000000],
+        [154, "霍", "Huò", 1000000],
+        [155, "涂 / 塗", "Tú", 1000000],
+        [156, "成", "Chéng", 1000000],
+        [157, "苗", "Miáo", 1000000],
+        [158, "谷", "Gǔ", 990000],
+        [159, "盛", "Shèng", 980000],
+        [160, "曲", "Qū", 980000],
+        [161, "翁", "Wēng", 970000],
+        [162, "冉", "Rǎn", 970000],
+        [163, "骆 / 駱", "Luò", 960000],
+        [164, "蓝 / 藍", "Lán", 960000],
+        [165, "路", "Lù", 950000],
+        [166, "游 / 遊", "Yóu", 940000],
+        [167, "辛", "Xīn", 920000],
+        [168, "靳", "Jìn", 920000],
+        [169, "欧阳 / 歐陽", "Ōuyáng", 910000],
+        [170, "管", "Guǎn", 870000],
+        [171, "柴", "Chái", 860000],
+        [172, "蒙", "Méng", 830000],
+        [173, "鲍 / 鮑", "Bào", 820000],
+        [174, "华 / 華", "Huá", 820000],
+        [175, "喻", "Yù", 810000],
+        [176, "祁", "Qí", 800000],
+        [177, "蒲", "Pú", 750000],
+        [178, "房", "Fáng", 750000],
+        [179, "滕", "Téng", 740000],
+        [180, "屈", "Qū", 730000],
+        [181, "饶 / 饒", "Ráo", 730000],
+        [182, "解", "Xiè", 710000],
+        [183, "牟", "Mù", 700000],
+        [184, "艾", "Ài", 690000],
+        [185, "尤", "Yóu", 680000],
+        [186, "阳 / 陽", "Yáng", 670000],
+        [187, "时 / 時", "Shí", 670000],
+        [188, "穆", "Mù", 640000],
+        [189, "农 / 農", "Nóng", 620000],
+        [190, "司", "Sī", 590000],
+        [191, "卓", "Zhuō", 580000],
+        [192, "古", "Gǔ", 580000],
+        [193, "吉", "Jí", 580000],
+        [194, "缪 / 繆", "Miào", 570000],
+        [195, "简 / 簡", "Jiǎn", 570000],
+        [196, "车 / 車", "Chē", 570000],
+        [197, "项 / 項", "Xiàng", 570000],
+        [198, "连 / 連", "Lián", 570000],
+        [199, "芦 / 蘆", "Lú", 570000],
+        [200, "麦 / 麥", "Mài", 550000],
+        [201, "褚", "Chǔ", 540000],
+        [202, "娄 / 婁", "Lóu", 530000],
+        [203, "窦 / 竇", "Dòu", 530000],
+        [204, "戚", "Qī", 530000],
+        [205, "岑", "Cén", 520000],
+        [206, "景", "Jǐng", 520000],
+        [207, "党 / 黨", "Dǎng", 520000],
+        [208, "宫 / 宮", "Gōng", 520000],
+        [209, "费 / 費", "Fèi", 510000],
+        [210, "卜", "Bǔ", 510000],
+        [211, "冷", "Lěng", 500000],
+        [212, "晏", "Yàn", 500000],
+        [213, "席", "Xí", 480000],
+        [214, "卫 / 衛", "Wèi", 480000],
+        [215, "米", "Mǐ", 460000],
+        [216, "柏", "Bǎi", 460000],
+        [217, "宗", "Zōng", 450000],
+        [218, "瞿", "Qú", 440000],
+        [219, "桂", "Guì", 440000],
+        [220, "全", "Quán", 440000],
+        [221, "佟", "Tóng", 430000],
+        [222, "应 / 應", "Yīng", 430000],
+        [223, "臧", "Zāng", 430000],
+        [224, "闵 / 閔", "Mǐn", 430000],
+        [225, "苟", "Gǒu", 430000],
+        [226, "邬 / 鄔", "Wū", 420000],
+        [227, "边 / 邊", "Biān", 420000],
+        [228, "卞", "Biàn", 420000],
+        [229, "姬", "Jī", 420000],
+        [230, "师 / 師", "Shī", 410000],
+        [231, "和", "Hé", 410000],
+        [232, "仇", "Qiú", 400000],
+        [233, "栾 / 欒", "Luán", 400000],
+        [234, "隋", "Suí", 400000],
+        [235, "商", "Shāng", 390000],
+        [236, "刁", "Diāo", 390000],
+        [237, "沙", "Shā", 390000],
+        [238, "荣 / 榮", "Róng", 380000],
+        [239, "巫", "Wū", 380000],
+        [240, "寇", "Kòu", 380000],
+        [241, "桑", "Sāng", 370000],
+        [242, "郎", "Láng", 370000],
+        [243, "甄", "Zhēn", 360000],
+        [244, "丛 / 叢", "Cóng", 360000],
+        [245, "仲", "Zhòng", 350000],
+        [246, "虞", "Yú", 350000],
+        [247, "敖", "Áo", 350000],
+        [248, "巩 / 鞏", "Gǒng", 340000],
+        [249, "明", "Míng", 340000],
+        [250, "佘", "Shé", 340000],
+        [251, "池", "Chí", 340000],
+        [252, "查", "Zhā", 330000],
+        [253, "麻", "Má", 330000],
+        [254, "苑", "Yuàn", 330000],
+        [255, "迟 / 遲", "Chí", 320000],
+        [256, "邝 / 鄺", "Kuàng", 320000],
+        [257, "官", "Guān", 310000],
+        [258, "封", "Fēng", 310000],
+        [259, "谈 / 談", "Tán", 310000],
+        [260, "匡", "Kuāng", 300000],
+        [261, "鞠", "Jū", 300000],
+        [262, "惠", "Huì", 298000],
+        [263, "荆 / 荊", "Jīng", 289000],
+        [264, "乐 / 樂", "Yuè", 288000],
+        [265, "冀", "Jì", 285000],
+        [266, "郁 / 鬱", "Yù", 285000],
+        [267, "胥", "Xū", 285000],
+        [268, "南", "Nán", 277000],
+        [269, "班", "Bān", 273000],
+        [270, "储 / 儲", "Chǔ", 272000],
+        [271, "原", "Yuán", 270000],
+        [272, "栗", "Lì", 266000],
+        [273, "燕", "Yàn", 264000],
+        [274, "楚", "Chǔ", 263000],
+        [275, "鄢", "Yān", 263000],
+        [276, "劳 / 勞", "Láo", 259000],
+        [277, "谌 / 諶", "Chén", 248000],
+        [278, "奚", "Xī", 231000],
+        [279, "皮", "Pí", 229000],
+        [280, "粟", "Sù", 228000],
+        [281, "冼", "Xiǎn", 228000],
+        [282, "蔺 / 藺", "Lìn", 228000],
+        [283, "楼 / 樓", "Lóu", 228000],
+        [284, "盘 / 盤", "Pán", 225000],
+        [285, "满 / 滿", "Mǎn", 219000],
+        [286, "闻 / 聞", "Wén", 217000],
+        [287, "位", "Wèi", 208000],
+        [288, "厉 / 厲", "Lì", 206000],
+        [289, "伊", "Yī", 206000],
+        [290, "仝", "Tóng", 200000],
+        [291, "区 / 區", "Ōu", 199000],
+        [292, "郜", "Gào", 198000],
+        [293, "海", "Hǎi", 197000],
+        [294, "阚 / 闞", "Kàn", 196000],
+        [295, "花", "Huā", 195000],
+        [296, "权 / 權", "Quán", 191000],
+        [297, "强 / 強", "Qiáng", 190000],
+        [298, "帅 / 帥", "Shuài", 190000],
+        [299, "屠", "Tú", 189000],
+        [300, "豆", "Dòu", 188000],
+        [301, "朴", "Piáo", 187000],
+        [302, "盖 / 蓋", "Gě", 186000],
+        [303, "练 / 練", "Liàn", 185000],
+        [304, "廉", "Lián", 184000],
+        [305, "禹", "Yǔ", 182000],
+        [306, "井", "Jǐng", 179000],
+        [307, "祖", "Zǔ", 177000],
+        [308, "漆", "Qī", 177000],
+        [309, "巴", "Bā", 177000],
+        [310, "丰 / 豐", "Fēng", 176000],
+        [311, "支", "Zhī", 173000],
+        [312, "卿", "Qīng", 172000],
+        [313, "国 / 國", "Guó", 171000],
+        [314, "狄", "Dí", 168000],
+        [315, "平", "Píng", 166000],
+        [316, "计 / 計", "Jì", 165000],
+        [317, "索", "Suǒ", 165000],
+        [318, "宣", "Xuān", 164000],
+        [319, "晋 / 晉", "Jìn", 162000],
+        [320, "相", "Xiàng", 162000],
+        [321, "初", "Chū", 159000],
+        [322, "门 / 門", "Mén", 159000],
+        [323, "云 / 雲", "Yún", 156000],
+        [324, "容", "Róng", 154000],
+        [325, "敬", "Jìng", 150000],
+        [326, "来 / 來", "Lái", 148000],
+        [327, "扈", "Hù", 147000],
+        [328, "晁", "Cháo", 146000],
+        [329, "芮", "Ruì", 146000],
+        [330, "都", "Dū", 146000],
+        [331, "普", "Pǔ", 145000],
+        [332, "阙 / 闕", "Quē", 145000],
+        [333, "浦", "Pǔ", 144000],
+        [334, "戈", "Gē", 144000],
+        [335, "伏", "Fú", 143000],
+        [336, "鹿", "Lù", 140000],
+        [337, "薄", "Bó", 140000],
+        [338, "邸", "Dǐ", 139000],
+        [339, "雍", "Yōng", 139000],
+        [340, "辜", "Gū", 138000],
+        [341, "羊", "Yáng", 136000],
+        [342, "阿", "Ā", 136000],
+        [343, "乌 / 烏", "Wū", 135000],
+        [344, "母", "Mǔ", 135000],
+        [345, "裘", "Qiú", 134000],
+        [346, "亓", "Qí", 134000],
+        [347, "修", "Xiū", 133000],
+        [348, "邰", "Tái", 130000],
+        [349, "赫", "Hè", 128000],
+        [350, "杭", "Háng", 128000],
+        [351, "况 / 況", "Kuàng", 124000],
+        [352, "那", "Nā", 124000],
+        [353, "宿", "Sù", 123000],
+        [354, "鲜 / 鮮", "Xiān", 122000],
+        [355, "印", "Yìn", 121000],
+        [356, "逯", "Lù", 121000],
+        [357, "隆", "Lóng", 120000],
+        [358, "茹", "Rú", 119000],
+        [359, "诸 / 諸", "Zhū", 118000],
+        [360, "战 / 戰", "Zhàn", 117000],
+        [361, "慕", "Mù", 115000],
+        [362, "危", "Wēi", 112000],
+        [363, "玉", "Yù", 112000],
+        [364, "银 / 銀", "Yín", 111000],
+        [365, "亢", "Kàng", 110000],
+        [366, "嵇", "Jī", 109000],
+        [367, "公", "Gōng", 109000],
+        [368, "哈", "Hǎ", 107000],
+        [369, "湛", "Zhàn", 105000],
+        [370, "宾 / 賓", "Bīn", 102000],
+        [371, "戎", "Róng", 101000],
+        [372, "勾", "Gōu", 101000],
+        [373, "茅", "Máo", 101000],
+        [374, "利", "Lì", 100000],
+        [375, "於", "Yú", 99000],
+        [376, "呼", "Hū", 98000],
+        [377, "居", "Jū", 98000],
+        [378, "揭", "Jiē", 96000],
+        [379, "干", "Gān", 96000],
+        [380, "但", "Dàn", 95000],
+        [381, "尉", "Wèi", 95000],
+        [382, "冶", "Yě", 94000],
+        [383, "斯", "Sī", 93000],
+        [384, "元", "Yuán", 92000],
+        [385, "束", "Shù", 91000],
+        [386, "檀", "Tán", 90000],
+        [387, "衣", "Yī", 90000],
+        [388, "信", "Xìn", 89000],
+        [389, "展", "Zhǎn", 89000],
+        [390, "阴 / 陰", "Yīn", 89000],
+        [391, "昝", "Zǎn", 87000],
+        [392, "智", "Zhì", 87000],
+        [393, "幸", "Xìng", 86000],
+        [394, "奉", "Fèng", 85000],
+        [395, "植", "Zhí", 85000],
+        [396, "衡", "Héng", 84000],
+        [397, "富", "Fù", 84000],
+        [398, "尧 / 堯", "Yáo", 80000],
+        [399, "闭 / 閉", "Bì", 80000],
+        [400, "由", "Yóu", 80000],
+        [401, "水", "Shuǐ", 4000],
+        [402, "昌", "Chāng", 100000],
+        [403, "凤 / 鳳", "Fèng", 30000],
+        [404, "酆", "Fēng", 20000],
+        [405, "贝 / 貝", "Bèi", 4000],
+        [406, "经 / 經", "Jīng", 50000],
+        [407, "贲 / 賁", "Bēn", 20000],
+        [408, "钮 / 鈕", "Niǔ", 100000],
+        [409, "滑", "Huá", 100000],
+        [410, "荀", "Xún", 100000],
+        [411, "麴", "Qū", 30000],
+        [412, "家", "Jiā", 100000],
+        [413, "羿", "Yì", 80000],
+        [414, "汲", "Jí", 50000],
+        [415, "邴", "Bǐng", 30000],
+        [416, "糜", "Méi", 100000],
+        [417, "松", "Sōng", 80000],
+        [418, "弓", "Gōng", 50000],
+        [419, "牧", "Mù", 30000],
+        [420, "隗", "Wěi", 20000],
+        [421, "山", "Shān", 100000],
+        [422, "宓", "Mì", 30000],
+        [423, "蓬", "Péng", 50000],
+        [424, "郗", "Xī", 30000],
+        [425, "仰", "Yǎng", 40000],
+        [426, "秋", "Qiū", 50000],
+        [427, "暴", "Bào", 50000],
+        [428, "钭 / 鈄", "Tǒu", 20000],
+        [429, "韶", "Sháo", 20000],
+        [430, "蓟 / 薊", "Jì", 100000],
+        [431, "怀 / 懷", "Huái", 1300],
+        [432, "从 / 從", "Cóng", 380000],
+        [433, "鄂", "È", 2000],
+        [434, "咸", "Xián", 500000],
+        [435, "籍", "Jí", 20000],
+        [436, "能", "Nài", 320000],
+        [437, "苍 / 蒼", "Cāng", 2000],
+        [438, "双 / 雙", "Shuāng", 1400],
+        [439, "莘", "Shēn", 30000],
+        [440, "贡 / 貢", "Gòng", 30000],
+        [441, "逄", "Páng", 30000],
+        [442, "扶", "Fú", 50000],
+        [443, "堵", "Dǔ", 30000],
+        [444, "宰", "Zǎi", 30000],
+        [445, "郦 / 酈", "Lì", 30000],
+        [446, "郤", "Xì", 20000],
+        [447, "璩", "Qú", 10000],
+        [448, "濮", "Pú", 100000],
+        [449, "寿 / 壽", "Shòu", 4000],
+        [450, "通", "Tōng", 10000],
+        [451, "郏 / 郟", "Jiá", 20000],
+        [452, "别 / 別", "Bié", 1100],
+        [453, "充", "Chōng", 2300],
+        [454, "习 / 習", "Xí", 170000],
+        [455, "宦", "Huàn", 4000],
+        [456, "鱼 / 魚", "Yú", 100000],
+        [457, "慎", "Shèn", 30000],
+        [458, "庾", "Yǔ", 50000],
+        [459, "终 / 終", "Zhōng", 10000],
+        [460, "暨", "Jì", 20000],
+        [461, "步", "Bù", 8000],
+        [462, "弘", "Hóng", 20000],
+        [463, "广 / 廣", "Guǎng", 4300],
+        [464, "禄 / 祿", "Lù", 100000],
+        [465, "东 / 東", "Dōng", 100000],
+        [466, "殳", "Shū", 10000],
+        [467, "沃", "Wò", 1200],
+        [468, "蔚", "Wèi", 300000],
+        [469, "越", "Yuè", 100000],
+        [470, "夔", "Kuí", 10000],
+        [471, "厍 / 厙", "Shè", 10000],
+        [472, "融", "Róng", 10000],
+        [473, "訾", "Zī", 7000],
+        [474, "空", "Kōng", 10000],
+        [475, "毋", "Wú", 40000],
+        [476, "乜", "Miē", 1500],
+        [477, "养 / 養", "Yǎng", 20000],
+        [478, "须 / 須", "Xū", 50000],
+        [479, "巢", "Cháo", 30000],
+        [480, "蒯", "Kuǎi", 1600],
+        [481, "后", "Hòu", 10000],
+        [482, "红 / 紅", "Hóng", 20000],
+        [483, "竺", "Zhú", 100000],
+        [484, "益", "Yì", 50000],
+        [485, "桓", "Huán", 4000],
+        [486, "万俟 / 萬俟", "Mòqí", 2000],
+        [487, "司马 / 司馬", "Sīmǎ", 23000],
+        [488, "上官", "Shàngguān", 88000],
+        [489, "夏侯", "Xiàhóu", 11000],
+        [490, "诸葛 / 諸葛", "Zhūgě", 48000],
+        [491, "闻人 / 聞人", "Wénrén", 5000],
+        [492, "东方 / 東方", "Dōngfāng", 10000],
+        [493, "赫连 / 赫連", "Hèlián", 8000],
+        [494, "皇甫", "Huángfǔ", 64000],
+        [495, "尉迟 / 尉遲", "Yùchí", 4000],
+        [496, "公羊", "Gōngyáng", 3000],
+        [497, "澹台 / 澹臺", "Tántái", 2000],
+        [498, "公冶", "Gōngyě", 2000],
+        [499, "宗政", "Zōngzhèng", 1500],
+        [500, "濮阳 / 濮陽", "Púyáng", 1500],
+        [501, "淳于", "Chúnyú", 3000],
+        [502, "单于 / 單于", "Chányú", 1000],
+        [503, "太叔", "Tàishū", 800],
+        [504, "申屠", "Shēntú", 19000],
+        [505, "公孙 / 公孫", "Gōngsūn", 4000],
+        [506, "仲孙 / 仲孫", "Zhòngsūn", 1000],
+        [507, "轩辕 / 軒轅", "Xuānyuán", 3000],
+        [508, "令狐", "Línghú", 55000],
+        [509, "钟离 / 鐘離", "Zhōnglí", 2000],
+        [510, "宇文", "Yǔwén", 21000],
+        [511, "长孙 / 長孫", "Zhǎngsūn", 3000],
+        [512, "慕容", "Mùróng", 5000],
+        [513, "鲜于 / 鮮于", "Xiānyú", 1000],
+        [514, "闾丘 / 閭丘", "Lǘqiū", 500],
+        [515, "司徒", "Sītú", 47000],
+        [516, "司空", "Sīkōng", 5000],
+        [517, "亓官", "Qíguān", 500],
+        [518, "司寇", "Sīkòu", 800],
+        [519, "仉", "Zhǎng", 5000],
+        [520, "督", "Dū", 10000],
+        [521, "子车 / 子車", "Zǐchē", 500],
+        [522, "颛孙 / 顓孫", "Zhuānsūn", 500],
+        [523, "端木", "Duānmù", 3000],
+        [524, "巫马 / 巫馬", "Wūmǎ", 1000],
+        [525, "公西", "Gōngxī", 1000],
+        [526, "漆雕", "Qīdiāo", 500],
+        [527, "乐正 / 樂正", "Yuèzhèng", 1000],
+        [528, "壤驷 / 壤駟", "Rǎngsì", 300],
+        [529, "公良", "Gōngliáng", 500],
+        [530, "拓跋", "Tuòbá", 5000],
+        [531, "夹谷 / 夾谷", "Jiágǔ", 300],
+        [532, "宰父", "Zǎifǔ", 300],
+        [533, "谷梁 / 穀粱", "Gǔliáng", 500],
+        [534, "闫 / 閆", "Yán", 3000000],
+        [535, "法", "Fǎ", 1500],
+        [536, "汝", "Rǔ", 129000],
+        [537, "涂", "Tú", 1300000],
+        [538, "钦 / 欽", "Qīn", 30000],
+        [539, "段干", "Duàngān", 1000],
+        [540, "百里", "Bǎilǐ", 500],
+        [541, "东郭 / 東郭", "Dōngguō", 500],
+        [542, "南门 / 南門", "Nánmén", 500],
+        [543, "呼延", "Hūyán", 8000],
+        [544, "归 / 歸", "Guī", 50000],
+        [545, "羊舌", "Yángshé", 300],
+        [546, "微生", "Wēishēng", 500],
+        [547, "缑 / 緱", "Gōu", 5000],
+        [548, "后 / 後", "Hòu", 4000],
+        [549, "有", "Yǒu", 2000],
+        [550, "琴", "Qín", 10000],
+        [551, "梁丘", "Liángqiū", 500],
+        [552, "左丘", "Zuǒqiū", 500],
+        [553, "东门 / 東門", "Dōngmén", 500],
+        [554, "西门 / 西門", "Xīmén", 1000],
+        [555, "佴", "Nài", 900],
+        [556, "伯", "Bó", 540000],
+        [557, "赏 / 賞", "Shǎng", 2000],
+        [558, "南宫 / 南宮", "Nángōng", 13000],
+        [559, "墨", "Mò", 100000],
+        [560, "谯 / 譙", "Qiáo", 100000],
+        [561, "笪", "Dá", 12000],
+        [562, "年", "Nián", 1700],
+        [563, "爱 / 愛", "Ài", 730000],
+        [564, "阳 / 陽", "Yáng", 465000],
+        [565, "佟", "Tóng", 1800000],
+        [566, "第五", "Dìwǔ", 500],
+        [567, "言", "Yán", 5000],
+        [568, "福", "Fú", 20000],
+    ];
+
+    const totalPopulation = rawData.reduce((sum, row) => sum + row[3], 0);
+
+    /* ============================================================
+       STRICHZAHL-TABELLE für vereinfachte Schriftzeichen
+       VOLLSTÄNDIG für alle Zeichen aus rawData.
+       Bei mehrstelligen Namen wird die Strichzahl der Einzelzeichen summiert.
+       ============================================================ */
+    const strokeCounts = {
+        // === Einzelzeichen ===
+        "王":4,"李":7,"张":7,"刘":6,"陈":7,"杨":7,"黄":11,"吴":7,"赵":9,"周":8,
+        "徐":10,"孙":6,"马":3,"朱":6,"胡":9,"林":8,"郭":10,"何":7,"高":10,"罗":8,
+        "郑":8,"梁":11,"谢":12,"宋":7,"唐":10,"许":6,"邓":4,"冯":5,"韩":12,"曹":11,
+        "曾":12,"彭":12,"萧":11,"蔡":14,"潘":15,"田":5,"董":12,"袁":10,"于":3,"余":7,
+        "叶":5,"蒋":12,"杜":7,"苏":7,"魏":17,"程":12,"吕":6,"丁":2,"沈":7,"任":6,
+        "姚":9,"卢":5,"傅":12,"钟":9,"姜":9,"崔":11,"谭":14,"廖":14,"范":8,"汪":7,
+        "陆":7,"金":8,"石":5,"戴":17,"贾":10,"韦":4,"夏":10,"邱":7,"方":4,"侯":9,
+        "邹":7,"熊":14,"孟":8,"秦":10,"白":5,"江":6,"阎":11,"薛":16,"尹":4,"段":9,
+        "雷":13,"黎":15,"史":5,"龙":5,"陶":10,"贺":9,"顾":10,"毛":4,"郝":9,"龚":11,
+        "邵":7,"万":3,"钱":10,"严":7,"赖":13,"覃":12,"洪":9,"武":8,"莫":10,"孔":4,
+        "汤":6,"向":6,"常":11,"温":12,"康":11,"施":9,"文":4,"牛":4,"樊":15,"葛":12,
+        "邢":6,"安":6,"齐":6,"易":8,"乔":6,"伍":6,"庞":8,"颜":15,"倪":10,"庄":6,
+        "聂":10,"章":11,"鲁":12,"岳":8,"翟":14,"殷":10,"詹":13,"申":5,"欧":8,"耿":10,
+        "关":6,"兰":5,"焦":12,"俞":9,"左":5,"柳":9,"甘":5,"祝":9,"包":5,"宁":5,
+        "尚":8,"符":11,"舒":12,"阮":6,"柯":9,"纪":6,"梅":11,"童":12,"凌":10,"毕":6,
+        "单":8,"季":8,"裴":14,"霍":16,"涂":10,"成":6,"苗":8,"谷":7,"盛":11,"曲":6,
+        "翁":10,"冉":5,"骆":9,"蓝":13,"路":13,"游":12,"辛":7,"靳":13,"管":14,"柴":10,
+        "蒙":13,"鲍":13,"华":6,"喻":12,"祁":6,"蒲":13,"房":8,"滕":14,"屈":8,"饶":9,
+        "解":13,"牟":6,"艾":5,"尤":4,"阳":6,"时":7,"穆":16,"农":6,"司":5,"卓":8,
+        "古":5,"吉":6,"缪":14,"简":13,"车":4,"项":9,"连":7,"芦":7,"麦":7,"褚":13,
+        "娄":9,"窦":13,"戚":11,"岑":7,"景":12,"党":10,"宫":9,"费":9,"卜":2,"冷":7,
+        "晏":10,"席":10,"卫":3,"米":6,"柏":9,"宗":8,"瞿":18,"桂":10,"全":6,"佟":7,
+        "应":7,"臧":14,"闵":7,"苟":8,"邬":6,"边":5,"卞":4,"姬":10,"师":6,"和":8,
+        "仇":4,"栾":10,"隋":11,"商":11,"刁":2,"沙":7,"荣":9,"巫":7,"寇":11,"桑":10,
+        "郎":8,"甄":13,"丛":5,"仲":6,"虞":13,"敖":10,"巩":6,"明":8,"佘":7,"池":6,
+        "查":9,"麻":11,"苑":8,"迟":7,"邝":5,"官":8,"封":9,"谈":10,"匡":6,"鞠":17,
+        "惠":12,"荆":9,"乐":5,"冀":16,"郁":8,"胥":9,"南":9,"班":10,"储":12,"原":10,
+        "栗":10,"燕":16,"楚":13,"鄢":13,"劳":7,"谌":11,"奚":10,"皮":5,"粟":12,"冼":7,
+        "蔺":14,"楼":13,"盘":11,"满":13,"闻":9,"位":7,"厉":5,"伊":6,"仝":5,"区":4,
+        "郜":9,"海":10,"阚":14,"花":7,"权":6,"强":12,"帅":5,"屠":11,"豆":7,"朴":6,
+        "盖":11,"练":8,"廉":13,"禹":9,"井":4,"祖":9,"漆":14,"巴":4,"丰":4,"支":4,
+        "卿":10,"国":8,"狄":7,"平":5,"计":4,"索":10,"宣":9,"晋":10,"相":9,"初":7,
+        "门":3,"云":4,"容":10,"敬":12,"来":7,"扈":11,"晁":10,"芮":7,"都":10,"普":12,
+        "阙":13,"浦":10,"戈":4,"伏":6,"鹿":11,"薄":16,"邸":8,"雍":13,"辜":12,"羊":6,
+        "阿":7,"乌":4,"母":5,"裘":13,"亓":4,"修":9,"邰":7,"赫":14,"杭":8,"况":7,
+        "那":6,"宿":11,"鲜":14,"印":5,"逯":11,"隆":11,"茹":9,"诸":10,"战":9,"慕":14,
+        "危":6,"玉":5,"银":11,"亢":4,"嵇":11,"公":4,"哈":9,"湛":12,"宾":10,"戎":6,
+        "勾":4,"茅":8,"利":7,"於":8,"呼":8,"居":8,"揭":12,"干":3,"但":7,"尉":11,
+        "冶":7,"斯":12,"元":4,"束":7,"檀":17,"衣":6,"信":9,"展":10,"阴":6,"昝":9,
+        "智":12,"幸":8,"奉":8,"植":12,"衡":16,"富":12,"尧":6,"闭":6,"由":5,"水":4,
+        "昌":8,"凤":4,"酆":20,"贝":4,"经":8,"贲":9,"钮":9,"滑":12,"荀":9,"麴":19,
+        "家":10,"羿":9,"汲":6,"邴":7,"糜":17,"松":8,"弓":3,"牧":8,"隗":11,"山":3,
+        "宓":8,"蓬":13,"郗":9,"仰":6,"秋":9,"暴":15,"钭":9,"韶":14,"蓟":13,"怀":7,
+        "从":4,"鄂":11,"咸":9,"籍":20,"能":10,"苍":7,"双":4,"莘":10,"贡":7,"逄":9,
+        "扶":7,"堵":11,"宰":10,"郦":9,"郤":9,"璩":17,"濮":17,"寿":7,"通":10,"郏":8,
+        "别":7,"充":6,"习":3,"宦":9,"鱼":8,"慎":13,"庾":11,"终":8,"暨":14,"步":7,
+        "弘":5,"广":3,"禄":12,"东":5,"殳":4,"沃":7,"蔚":14,"越":12,"夔":21,"厍":6,
+        "融":16,"訾":13,"空":8,"毋":4,"乜":2,"养":9,"须":9,"巢":11,"蒯":13,"后":6,
+        "红":6,"竺":8,"益":10,"桓":10,"汝":6,"法":8,"钦":9,"闫":6,
+        // === Zweite Zeichen in mehrstelligen Nachnamen (für die Summierung) ===
+        "欧":8,"阳":6,"马":3,"上":3,"官":8,"夏":10,"侯":9,"诸":10,"葛":12,
+        "闻":9,"人":2,"方":4,"赫":14,"连":7,"皇":9,"甫":7,"迟":7,
+        "羊":6,"台":5,"治":7,"宗":8,"政":9,"濮":17,"淳":11,"于":3,
+        "太":4,"叔":8,"申":5,"屠":11,"孙":6,"仲":6,"轩":7,"辕":14,
+        "令":5,"狐":8,"离":10,"宇":6,"文":4,"长":4,"容":10,"慕":14,
+        "闾":13,"丘":5,"徒":10,"司":5,"空":8,"寇":11,"仉":4,"督":13,
+        "子":3,"车":4,"颛":15,"端":14,"木":4,"巫":7,"西":6,"漆":14,
+        "雕":16,"正":5,"壤":20,"驷":8,"良":7,"拓":8,"跋":12,"夹":6,
+        "谷":7,"梁":11,"段":9,"干":3,"百":6,"里":7,"归":5,"舌":6,
+        "微":13,"生":5,"缑":12,"有":6,"琴":12,"左":5,"门":3,"佴":8,
+        "伯":7,"赏":12,"墨":15,"谯":14,"笪":11,"年":6,"爱":10,"第":11,
+        "五":4,"言":7,"福":13,
+        // === Einige Zeichen, die in den Slash-Varianten vorkommen (zur Sicherheit) ===
+        "張":11,"劉":15,"陳":10,"楊":13,"黃":12,"吳":7,"趙":14,"羅":19,"鄭":15,
+        "謝":17,"許":11,"鄧":15,"馮":12,"韓":17,"蕭":16,"葉":12,"蔣":14,
+        "蘇":22,"呂":6,"盧":16,"鍾":17,"譚":19,"陸":10,"賈":13,"韋":9,
+        "鄒":13,"閻":16,"龍":16,"賀":12,"顧":21,"龔":22,"萬":12,"錢":16,
+        "嚴":20,"賴":16,"湯":12,"溫":13,"龐":19,"顏":18,"莊":10,"聶":18,
+        "魯":15,"歐":15,"關":19,"蘭":23,"寧":14,"紀":9,"畢":11,"單":12,
+        "塗":13,"駱":16,"藍":20,"遊":12,"鮑":16,"華":10,"繆":17,"簡":18,
+        "車":7,"項":12,"連":10,"蘆":19,"麥":11,"婁":11,"竇":20,"黨":20,
+        "費":12,"衛":15,"應":17,"閔":12,"鄔":12,"邊":18,"師":10,"欒":23,
+        "榮":14,"叢":18,"鞏":15,"遲":16,"鄺":16,"談":15,"荊":9,"樂":15,
+        "鬱":29,"儲":17,"勞":12,"諶":16,"藺":20,"樓":15,"盤":15,"滿":14,
+        "聞":14,"厲":15,"區":11,"閬":15,"權":21,"強":11,"帥":9,"蓋":14,
+        "練":15,"國":11,"計":9,"晉":10,"闕":18,"烏":10,"況":8,"鮮":17,
+        "銀":14,"賓":14,"戰":16,"諸":15,"歸":18,"壽":14,"郟":13,"別":7,
+        "習":11,"魚":11,"終":11,"廣":14,"祿":12,"東":8,"養":14,"須":12,
+        "紅":9,"萬":12,"閆":12,"欽":12,"馬":10,"陽":11,"長":8,"張":11,
+        "宮":9,"車":4,"鄧":4,"趙":9,
+    };
+
+    // Strichzahl für ein Schriftzeichen oder einen mehrstelligen Namen
+    function getStrokes(zeichen) {
+        const simplified = zeichen.split(' / ')[0].trim();
+        // Direkter Treffer (z. B. zweistellige Nachnamen wie 上官)
+        if (strokeCounts[simplified] !== undefined) return strokeCounts[simplified];
+        // Sonst Zeichen für Zeichen summieren
+        let sum = 0;
+        for (const ch of simplified) {
+            if (strokeCounts[ch] === undefined) return 999;
+            sum += strokeCounts[ch];
+        }
+        return sum;
+    }
+
+    const surnames = rawData.map(([nr, zeichen, pinyin, anzahl]) => ({
+        nr, zeichen, pinyin, anzahl,
+        strokes: getStrokes(zeichen),
+        generated: 0,
+        per100Mio: (anzahl / totalPopulation) * 100000000,
+        per100Gen: 0
+    }));
+
+    // ===== PINYIN-SORTIERUNG =====
+    const zhCollator = new Intl.Collator('zh', { sensitivity: 'base', numeric: false });
+    function comparePinyin(a, b) {
+        return zhCollator.compare(a.pinyin, b.pinyin);
+    }
+
+    // ===== FESTE RÄNGE (bei Gleichstand nach Pinyin) =====
+    const fixedRanks = (() => {
+        const sorted = [...surnames].sort((a, b) => {
+            if (b.anzahl !== a.anzahl) return b.anzahl - a.anzahl;
+            return comparePinyin(a, b);
+        });
+        const map = new Map();
+        sorted.forEach((s, i) => map.set(s.nr, i + 1));
+        return map;
+    })();
+
+    // ===== KUMULATIVE GEWICHTE FÜR ZIEHUNG =====
+    const { cumulative, totalWeight } = (() => {
+        const cum = [];
+        let sum = 0;
+        for (const s of surnames) { sum += s.anzahl; cum.push(sum); }
+        return { cumulative: cum, totalWeight: sum };
+    })();
+
+    function isTwoCharSurname(s) {
+        const base = s.zeichen.split(' / ')[0].trim();
+        return base.length === 2;
+    }
+
+    // DOM
+    const lastNameDisplay = document.getElementById('lastNameDisplay');
+    const lastPinyinDisplay = document.getElementById('lastPinyinDisplay');
+    const lastProbDisplay = document.getElementById('lastProbDisplay');
+    const lastGeneratedCount = document.getElementById('lastGeneratedCount');
+    const lastRankDisplay = document.getElementById('lastRankDisplay');
+    const lastFrequencyDisplay = document.getElementById('lastFrequencyDisplay');
+    const lastPer100GenDisplay = document.getElementById('lastPer100GenDisplay');
+    const tableBody = document.getElementById('tableBody');
+    const totalNamesCountSpan = document.getElementById('totalNamesCount');
+    const bulkCountInput = document.getElementById('bulkCount');
+    const generateSingleBtn = document.getElementById('generateSingleBtn');
+    const generateBulkBtn = document.getElementById('generateBulkBtn');
+
+    const totalGeneratedInfo = document.getElementById('totalGeneratedInfo');
+    const totalPersonsInfo = document.getElementById('totalPersonsInfo');
+    const effectiveDiversity = document.getElementById('effectiveDiversity');
+    const effectiveDiversityPromille = document.getElementById('effectiveDiversityPromille');
+    const twoCharDrawn = document.getElementById('twoCharDrawn');
+    const twoCharDrawnPromille = document.getElementById('twoCharDrawnPromille');
+    const twoCharPersons = document.getElementById('twoCharPersons');
+    const twoCharPersonsPromille = document.getElementById('twoCharPersonsPromille');
+
+    const topNSlider = document.getElementById('topNSlider');
+    const topNInput = document.getElementById('topNInput');
+    const topNValue = document.getElementById('topNValue');
+    const topNShare = document.getElementById('topNShare');
+    const topNShareSub = document.getElementById('topNShareSub');
+
+    let totalGeneratedAll = 0;
+    // Start-Sortierung: Rang (nr) aufsteigend – Aufhellung liegt auf „Rang"
+    let currentSort = { key: 'nr', dir: 'asc' };
+    let currentTopN = 10;
+
+    // Exakte Ziehung per kumulativer Verteilung + Binärsuche
+    function getRandomSurnameIndex() {
+        const r = Math.random() * totalWeight;
+        let lo = 0, hi = cumulative.length - 1;
+        while (lo < hi) {
+            const mid = Math.floor((lo + hi) / 2);
+            if (cumulative[mid] < r) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    function formatNumber(n) {
+        return n.toLocaleString('de-DE');
+    }
+
+    function formatPromille(value) {
+        return value.toFixed(4).replace('.', ',') + ' ‰';
+    }
+
+    function getSortedSurnames() {
+        const sorted = [...surnames];
+        const key = currentSort.key;
+        const dir = currentSort.dir;
+        sorted.sort((a, b) => {
+            let cmp = 0;
+            if (key === 'nr') {
+                const va = fixedRanks.get(a.nr);
+                const vb = fixedRanks.get(b.nr);
+                cmp = dir === 'asc' ? va - vb : vb - va;
+            } else if (key === 'zeichen') {
+                // Zuerst nach Strichzahl
+                cmp = a.strokes - b.strokes;
+                if (dir === 'desc') cmp = -cmp;
+                if (cmp === 0) {
+                    // Bei gleicher Strichzahl: stur nach Pinyin (alphabetisch)
+                    cmp = comparePinyin(a, b);
+                    if (dir === 'desc') cmp = -cmp;
+                }
+            } else if (key === 'pinyin') {
+                cmp = zhCollator.compare(a.pinyin, b.pinyin);
+                if (dir === 'desc') cmp = -cmp;
+            } else if (key === 'anzahl') {
+                cmp = dir === 'asc' ? a.anzahl - b.anzahl : b.anzahl - a.anzahl;
+            } else if (key === 'per100Mio') {
+                cmp = dir === 'asc' ? a.per100Mio - b.per100Mio : b.per100Mio - a.per100Mio;
+            } else if (key === 'generated') {
+                cmp = dir === 'asc' ? a.generated - b.generated : b.generated - a.generated;
+            } else if (key === 'per100gen') {
+                cmp = dir === 'asc' ? a.per100Gen - b.per100Gen : b.per100Gen - a.per100Gen;
+            }
+            if (cmp !== 0) return cmp;
+            // Fallback-Tie-Breaker: Rang
+            return fixedRanks.get(a.nr) - fixedRanks.get(b.nr);
+        });
+        return sorted;
+    }
+
+    function updateLastResult(index) {
+        const s = surnames[index];
+        const rank = fixedRanks.get(s.nr) || 0;
+        lastNameDisplay.textContent = s.zeichen;
+        lastPinyinDisplay.textContent = s.pinyin;
+        lastProbDisplay.textContent = formatNumber(Math.round(s.per100Mio));
+        lastGeneratedCount.textContent = formatNumber(s.generated);
+        lastRankDisplay.textContent = formatNumber(rank);
+        lastFrequencyDisplay.textContent = formatNumber(s.anzahl);
+        const per100gen = totalGeneratedAll > 0 ? (s.generated / totalGeneratedAll) * 100000000 : 0;
+        lastPer100GenDisplay.textContent = formatNumber(Math.round(per100gen));
+    }
+
+    function updateDiversityInfo() {
+        const withGen = surnames.filter(s => s.generated > 0).length;
+        effectiveDiversity.textContent = formatNumber(withGen);
+        const totalNames = surnames.length;
+        effectiveDiversityPromille.textContent = formatPromille(
+            totalNames > 0 ? (withGen / totalNames) * 1000 : 0
+        );
+
+        const twoCharSurnames = surnames.filter(s => isTwoCharSurname(s));
+        const twoCharVariety = twoCharSurnames.filter(s => s.generated > 0).length;
+        const twoCharPersonsSum = twoCharSurnames.reduce((acc, s) => acc + s.generated, 0);
+        twoCharDrawn.textContent = formatNumber(twoCharVariety);
+        twoCharPersons.textContent = formatNumber(twoCharPersonsSum);
+
+        const twoCharTotal = twoCharSurnames.length;
+        twoCharDrawnPromille.textContent = formatPromille(
+            twoCharTotal > 0 ? (twoCharVariety / twoCharTotal) * 1000 : 0
+        );
+        twoCharPersonsPromille.textContent = formatPromille(
+            totalGeneratedAll > 0 ? (twoCharPersonsSum / totalGeneratedAll) * 1000 : 0
+        );
+
+        for (const s of surnames) {
+            s.per100Gen = totalGeneratedAll > 0 ? (s.generated / totalGeneratedAll) * 100000000 : 0;
+        }
+    }
+
+    function updateTopN() {
+        const sorted = [...surnames].sort((a, b) => {
+            if (b.anzahl !== a.anzahl) return b.anzahl - a.anzahl;
+            return comparePinyin(a, b);
+        });
+        const n = Math.min(currentTopN, sorted.length);
+        const topNSum = sorted.slice(0, n).reduce((acc, s) => acc + s.anzahl, 0);
+        const share = (topNSum / totalPopulation) * 100;
+        topNValue.textContent = n;
+        topNShare.textContent = share.toFixed(2) + ' %';
+        topNShareSub.textContent = `Anteil der Top ${n} an Gesamtbevölkerung`;
+    }
+
+    function updateInfoCards() {
+        totalPersonsInfo.textContent = formatNumber(totalPopulation);
+        totalGeneratedInfo.textContent = formatNumber(totalGeneratedAll);
+        updateTopN();
+    }
+
+    function renderTable() {
+        const sorted = getSortedSurnames();
+        const maxPer100 = Math.max(1, ...surnames.map(s => s.per100Gen));
+        let html = '';
+        sorted.forEach((s, idx) => {
+            const rank = fixedRanks.get(s.nr) || 0;
+            const per100Mio = Math.round(s.per100Mio);
+            const per100Gen = Math.round(s.per100Gen);
+            const per100GenStr = per100Gen > 0 ? formatNumber(per100Gen) : '0';
+            const barPct = totalGeneratedAll > 0 && maxPer100 > 0
+                ? (s.per100Gen / maxPer100) * 100
+                : 0;
+            const barHtml = barPct > 0
+                ? `<div class="per100gen-wrapper">
+                    <div class="per100gen-bar-track">
+                        <div class="per100gen-bar-fill" style="width:${barPct}%"></div>
+                    </div>
+                    <div class="per100gen-value">${per100GenStr}</div>
+                  </div>`
+                : `<div class="per100gen-wrapper"><div class="per100gen-value">0</div></div>`;
+            html += `<tr>
+                <td class="row-num">${idx + 1}</td>
+                <td class="rank">${rank}</td>
+                <td class="name-cell">${s.zeichen}</td>
+                <td class="pinyin-cell">${s.pinyin}</td>
+                <td class="num-cell">${formatNumber(s.anzahl)}</td>
+                <td class="num-cell">${formatNumber(per100Mio)}</td>
+                <td class="generated-cell">${formatNumber(s.generated)}</td>
+                <td class="per100gen-cell">${barHtml}</td>
+            </tr>`;
+        });
+        tableBody.innerHTML = html;
+        totalNamesCountSpan.textContent = `${sorted.length} Einträge`;
+    }
+
+    function updateAll() {
+        updateDiversityInfo();
+        renderTable();
+        updateInfoCards();
+    }
+
+    function generateSingle() {
+        const idx = getRandomSurnameIndex();
+        surnames[idx].generated += 1;
+        totalGeneratedAll += 1;
+        updateAll();
+        updateLastResult(idx);
+    }
+
+    /* ============================================================
+       FIX: Schnellgenerator verwendet die exakte kumulative
+       Verteilung + Binärsuche (wie der Einzelgenerator).
+       ============================================================ */
+    function generateBulk(count) {
+        if (count <= 0) return;
+        let lastDrawnIdx = -1;
+        for (let i = 0; i < count; i++) {
+            lastDrawnIdx = getRandomSurnameIndex();
+            surnames[lastDrawnIdx].generated += 1;
+        }
+        totalGeneratedAll += count;
+        updateAll();
+        if (lastDrawnIdx >= 0) {
+            updateLastResult(lastDrawnIdx);
+        }
+    }
+
+    function initSorting() {
+        const headers = document.querySelectorAll('th[data-sort]');
+        headers.forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.getAttribute('data-sort');
+                if (currentSort.key === key) {
+                    currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.key = key;
+                    // Zeichen, Pinyin und Rang standardmäßig aufsteigend
+                    currentSort.dir = (key === 'zeichen' || key === 'pinyin' ||
+                                       key === 'nr') ? 'asc' : 'desc';
+                }
+                headers.forEach(h => h.classList.remove('sort-active'));
+                th.classList.add('sort-active');
+                headers.forEach(h => {
+                    const arrow = h.querySelector('.sort-arrow');
+                    if (h === th) {
+                        arrow.textContent = currentSort.dir === 'asc' ? '▲' : '▼';
+                    } else {
+                        arrow.textContent = '▼';
+                    }
+                });
+                renderTable();
+            });
+        });
+        // Start-Sortierung: Rang (#) aufsteigend aktiv markieren
+        document.querySelector('th[data-sort="nr"]').classList.add('sort-active');
+    }
+
+    function initTopN() {
+        topNSlider.addEventListener('input', () => {
+            currentTopN = parseInt(topNSlider.value, 10);
+            topNInput.value = currentTopN;
+            updateTopN();
+        });
+        topNInput.addEventListener('input', () => {
+            let val = parseInt(topNInput.value, 10);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 568) val = 568;
+            currentTopN = val;
+            topNSlider.value = val;
+            updateTopN();
+        });
+    }
+
+    function init() {
+        updateInfoCards();
+        updateLastResult(0);
+        initSorting();
+        initTopN();
+        updateAll();
+        updateLastResult(0);
+
+        generateSingleBtn.addEventListener('click', generateSingle);
+        generateBulkBtn.addEventListener('click', () => {
+            let count = parseInt(bulkCountInput.value, 10);
+            if (isNaN(count) || count < 1) count = 1;
+            bulkCountInput.value = count;
+            generateBulk(count);
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
