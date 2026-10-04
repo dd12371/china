@@ -654,7 +654,7 @@
         <div class="gen-box">
             <h2><span>⚡</span> Schnellgenerator</h2>
             <div class="bulk-row">
-                <input type="number" id="bulkCount" class="input-neon" placeholder="z. B. 1000000" min="1" step="1">
+                <input type="number" id="bulkCount" class="input-neon" min="1" step="1">
                 <button class="btn" id="generateBulkBtn">🚀 Generieren</button>
             </div>
             <div class="hint">Keine Obergrenze · kumulative Verteilung + Binärsuche · exakte Wahrscheinlichkeiten</div>
@@ -737,9 +737,9 @@
                 <div class="topn-sub" id="topNShareSub">Anteil der Top 10 an Gesamtbevölkerung</div>
             </div>
             <div class="topn-controls">
-                <input type="range" id="topNSlider" min="1" max="568" value="10" step="1">
-                <input type="number" id="topNInput" min="1" max="568" value="10" step="1">
-                <div class="topn-value" id="topNShare" style="min-width:90px; text-align:right;">45,50 %</div>
+                <input type="range" id="topNSlider" min="1" value="10" step="1">
+                <input type="number" id="topNInput" min="1" value="10" step="1">
+                <div class="topn-value" id="topNShare" style="min-width:90px; text-align:right;">45,5000 ‰</div>
             </div>
         </div>
     </div>
@@ -752,7 +752,7 @@
                     <span class="badge-label">Personen insgesamt</span>
                     <span class="badge-value" id="totalPersonsInfo">0</span>
                 </div>
-                <div class="count-badge" id="totalNamesCount">568 Einträge</div>
+                <div class="count-badge" id="totalNamesCount">– Einträge</div>
             </div>
         </div>
         <div class="table-wrapper">
@@ -776,7 +776,7 @@
 </div>
 
 <script>
-    const rawData = [
+        const rawData = [
         [1, "王", "Wáng", 95200000],
         [2, "李", "Lǐ", 93400000],
         [3, "张 / 張", "Zhāng", 89600000],
@@ -931,7 +931,7 @@
         [152, "季", "Jì", 1010000],
         [153, "裴", "Péi", 1000000],
         [154, "霍", "Huò", 1000000],
-        [155, "涂 / 塗", "Tú", 1000000],
+        [155, "涂 / 塗", "Tú", 2300000],
         [156, "成", "Chéng", 1000000],
         [157, "苗", "Miáo", 1000000],
         [158, "谷", "Gǔ", 990000],
@@ -962,7 +962,7 @@
         [183, "牟", "Mù", 700000],
         [184, "艾", "Ài", 690000],
         [185, "尤", "Yóu", 680000],
-        [186, "阳 / 陽", "Yáng", 670000],
+        [186, "阳 / 陽", "Yáng", 1135000],
         [187, "时 / 時", "Shí", 670000],
         [188, "穆", "Mù", 640000],
         [189, "农 / 農", "Nóng", 620000],
@@ -997,7 +997,7 @@
         [218, "瞿", "Qú", 440000],
         [219, "桂", "Guì", 440000],
         [220, "全", "Quán", 440000],
-        [221, "佟", "Tóng", 430000],
+        [221, "佟", "Tóng", 2230000],
         [222, "应 / 應", "Yīng", 430000],
         [223, "臧", "Zāng", 430000],
         [224, "闵 / 閔", "Mǐn", 430000],
@@ -1257,7 +1257,7 @@
         [478, "须 / 須", "Xū", 50000],
         [479, "巢", "Cháo", 30000],
         [480, "蒯", "Kuǎi", 1600],
-        [481, "后", "Hòu", 10000],
+        [481, "后 / 後", "Hòu", 14000],
         [482, "红 / 紅", "Hóng", 20000],
         [483, "竺", "Zhú", 100000],
         [484, "益", "Yì", 50000],
@@ -1313,38 +1313,34 @@
         [534, "闫 / 閆", "Yán", 3000000],
         [535, "法", "Fǎ", 1500],
         [536, "汝", "Rǔ", 129000],
-        [537, "涂", "Tú", 1300000],
-        [538, "钦 / 欽", "Qīn", 30000],
-        [539, "段干", "Duàngān", 1000],
-        [540, "百里", "Bǎilǐ", 500],
-        [541, "东郭 / 東郭", "Dōngguō", 500],
-        [542, "南门 / 南門", "Nánmén", 500],
-        [543, "呼延", "Hūyán", 8000],
-        [544, "归 / 歸", "Guī", 50000],
-        [545, "羊舌", "Yángshé", 300],
-        [546, "微生", "Wēishēng", 500],
-        [547, "缑 / 緱", "Gōu", 5000],
-        [548, "后 / 後", "Hòu", 4000],
-        [549, "有", "Yǒu", 2000],
-        [550, "琴", "Qín", 10000],
-        [551, "梁丘", "Liángqiū", 500],
-        [552, "左丘", "Zuǒqiū", 500],
-        [553, "东门 / 東門", "Dōngmén", 500],
-        [554, "西门 / 西門", "Xīmén", 1000],
-        [555, "佴", "Nài", 900],
-        [556, "伯", "Bó", 540000],
-        [557, "赏 / 賞", "Shǎng", 2000],
-        [558, "南宫 / 南宮", "Nángōng", 13000],
-        [559, "墨", "Mò", 100000],
-        [560, "谯 / 譙", "Qiáo", 100000],
-        [561, "笪", "Dá", 12000],
-        [562, "年", "Nián", 1700],
-        [563, "爱 / 愛", "Ài", 730000],
-        [564, "阳 / 陽", "Yáng", 465000],
-        [565, "佟", "Tóng", 1800000],
-        [566, "第五", "Dìwǔ", 500],
-        [567, "言", "Yán", 5000],
-        [568, "福", "Fú", 20000],
+        [537, "钦 / 欽", "Qīn", 30000],
+        [538, "段干", "Duàngān", 1000],
+        [539, "百里", "Bǎilǐ", 500],
+        [540, "东郭 / 東郭", "Dōngguō", 500],
+        [541, "南门 / 南門", "Nánmén", 500],
+        [542, "呼延", "Hūyán", 8000],
+        [543, "归 / 歸", "Guī", 50000],
+        [544, "羊舌", "Yángshé", 300],
+        [545, "微生", "Wēishēng", 500],
+        [546, "缑 / 緱", "Gōu", 5000],
+        [547, "有", "Yǒu", 2000],
+        [548, "琴", "Qín", 10000],
+        [549, "梁丘", "Liángqiū", 500],
+        [550, "左丘", "Zuǒqiū", 500],
+        [551, "东门 / 東門", "Dōngmén", 500],
+        [552, "西门 / 西門", "Xīmén", 1000],
+        [553, "佴", "Nài", 900],
+        [554, "伯", "Bó", 540000],
+        [555, "赏 / 賞", "Shǎng", 2000],
+        [556, "南宫 / 南宮", "Nángōng", 13000],
+        [557, "墨", "Mò", 100000],
+        [558, "谯 / 譙", "Qiáo", 100000],
+        [559, "笪", "Dá", 12000],
+        [560, "年", "Nián", 1700],
+        [561, "爱 / 愛", "Ài", 730000],
+        [562, "第五", "Dìwǔ", 500],
+        [563, "言", "Yán", 5000],
+        [564, "福", "Fú", 20000],
     ];
 
     const totalPopulation = rawData.reduce((sum, row) => sum + row[3], 0);
@@ -1404,7 +1400,7 @@
         "别":7,"充":6,"习":3,"宦":9,"鱼":8,"慎":13,"庾":11,"终":8,"暨":14,"步":7,
         "弘":5,"广":3,"禄":12,"东":5,"殳":4,"沃":7,"蔚":14,"越":12,"夔":21,"厍":6,
         "融":16,"訾":13,"空":8,"毋":4,"乜":2,"养":9,"须":9,"巢":11,"蒯":13,"后":6,
-        "红":6,"竺":8,"益":10,"桓":10,"汝":6,"法":8,"钦":9,"闫":6,
+        "红":6,"竺":8,"益":10,"桓":10,"汝":6,"法":8,"钦":9,"闫":6,"後":9,
         // === Zweite Zeichen in mehrstelligen Nachnamen (für die Summierung) ===
         "欧":8,"阳":6,"马":3,"上":3,"官":8,"夏":10,"侯":9,"诸":10,"葛":12,
         "闻":9,"人":2,"方":4,"赫":14,"连":7,"皇":9,"甫":7,"迟":7,
@@ -1629,9 +1625,9 @@
         });
         const n = Math.min(currentTopN, sorted.length);
         const topNSum = sorted.slice(0, n).reduce((acc, s) => acc + s.anzahl, 0);
-        const share = (topNSum / totalPopulation) * 100;
+        const sharePromille = (topNSum / totalPopulation) * 1000;
         topNValue.textContent = n;
-        topNShare.textContent = share.toFixed(2) + ' %';
+        topNShare.textContent = sharePromille.toFixed(4).replace('.', ',') + ' ‰';
         topNShareSub.textContent = `Anteil der Top ${n} an Gesamtbevölkerung`;
     }
 
@@ -1739,6 +1735,10 @@
     }
 
     function initTopN() {
+        const maxN = surnames.length;
+        topNSlider.max = maxN;
+        topNInput.max = maxN;
+
         topNSlider.addEventListener('input', () => {
             currentTopN = parseInt(topNSlider.value, 10);
             topNInput.value = currentTopN;
@@ -1747,7 +1747,7 @@
         topNInput.addEventListener('input', () => {
             let val = parseInt(topNInput.value, 10);
             if (isNaN(val) || val < 1) val = 1;
-            if (val > 568) val = 568;
+            if (val > maxN) val = maxN;
             currentTopN = val;
             topNSlider.value = val;
             updateTopN();
